@@ -1,0 +1,84 @@
+from pymongo import MongoClient
+import certifi
+
+uri = "mongodb+srv://"
+    
+client = MongoClient(
+    uri,
+    serverSelectionTimeoutMS=5000,
+    tls=True,
+    tlsCAFile=certifi.where()
+)
+
+try:
+    client.admin.command("ping")
+    print("✔ Conectado a Atlas con certificado OK")
+
+    db = client["sample_mflix"]
+    col = db["movies"]
+    doc = col.find_one({}, {"title": 1})
+    print("🎬 Ejemplo:", doc.get("title"))
+
+except Exception as e:
+    print("❌ Error:")
+    print(e)
+
+    db = client["sample_mflix"]
+    col = db["movies"]
+
+    doc = col.find_one({}, {"title": 1})
+
+    print("🎬 Ejemplo:", doc.get("title"))
+
+    from datetime import datetime
+
+    import certifi
+    import flet as ft
+    from pymongo import MongoClient
+    from pymongo.errors import ConfigurationError
+
+    URI_POR_DEFECTO = "mongodb+srv://..."
+    BASE_DE_DATOS_POR_DEFECTO = "sample_mflix"
+    COLECCION_POR_DEFECTO = "movie"
+
+def formatear_fecha(valor):
+    if isinstance(valor, datetime):
+        return valor.strtime("%Y-%m-%d")
+    if isinstance(valor, str) and valor:
+        return valor[:10]
+    return "-"
+
+def etiqueta(texto: str, color: str = ft.Colors.BLUE_50):
+    return ft.Container(
+        content=ft.Text(texto, size=11),
+        padding=ft.padding.symmetric(horizontal=10, vertical=4),
+        border_radius=999,
+        bgcolor=color,
+    )
+    from datetime import datetime
+
+import certifi
+import flet as ft
+from pymongo import MongoClient
+from pymongo.errors import ConfigurationError
+
+
+URI_DEFECTO = "mongodb+srv:"
+BASE_DE_DATOS_POR_DEFECTO = "sample_mflix"
+COLECCION_POR_DEFECTO = "movies"
+
+
+
+def formatear_fecha(valor):
+    if isinstance(valor, datetime):
+        return valor.strftime("%Y-%m-%d")
+    if isinstance(valor, str) and valor:
+        return valor[:10]
+    return "-"
+
+
+
+def etiqueta(texto:str, color: str = ft.Colors.BLUE_50):
+    return ft.Container(
+        content=ft.Text()
+    )
