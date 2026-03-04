@@ -57,10 +57,10 @@ def etiqueta(texto: str, color: str = ft.Colors.BLUE_50):
     )
     from datetime import datetime
 
-import certifi
-import flet as ft
-from pymongo import MongoClient
-from pymongo.errors import ConfigurationError
+    import certifi
+    import flet as ft
+    from pymongo import MongoClient
+    from pymongo.errors import ConfigurationError
 
 
 URI_DEFECTO = "mongodb+srv:"
@@ -80,5 +80,63 @@ def formatear_fecha(valor):
 
 def etiqueta(texto:str, color: str = ft.Colors.BLUE_50):
     return ft.Container(
-        content=ft.Text()
+        content=ft.Text(texto, size=11),
+        padding=ft.padding.symmetric(horizontal=10, vertical=4),
+        border_radius=999,
+        bgcolor=color,
     )
+
+
+def principal(pagina: ft.Page):
+    pagina.title = "catalogo mflix"
+    pagina.theme_mode = ft.ThemeMode.LIGHT
+    pagina.padding = 16
+    pagina.scroll = "auto"
+    
+    uri = URI_POR_DEFECTO
+    nombre_bd = BASE_DE_DATOS_POR_DEFECTO
+    nombre_coleccion = COLECCION_POR_DEFECTO
+    
+    cliente = None
+    coleccion = None
+    
+    def notificar(mensaje: str):
+        nonlocal cliente, coleccion
+        if coleccion is not None:
+            retunr coleccion
+            
+        if not uri:
+            raise ValueError("Falta URI de conexión a MongoDB.")
+        
+        cliente = MongoClient(
+            uri,
+            tls=True,
+            tlsCAFile=certifi.where(),
+            serverSelectionTimeoutMS=7000,
+        )
+        cliente.admin.command("ping")
+        coleccion = cliente[nombre_bd][nombre_coleccion]
+        return coleccion
+    
+    documentos_por_id = {}
+    desplegable_peliculas = ft.Dropdown(label="Selecciona una película", width=500)
+    contenedor_detalles = ft.Container()
+    texto_info = ft.Text(size=12,opacity=0.75)
+    
+    
+    def construir_detalle(documento):
+        titulo = documento.get("title") or ("Sin título")
+        id=pelicula = str(documento.get("_id", "-"))
+        anio = documento.get("year") or "-"
+        clasificacion = documento.get("rated") or "-"
+        duracion = documento.get("runtime") or "-"
+        generos = documento.get("genres") or []
+        idiomas = documento.get("languages") or []
+        paises = documento.get("countries") or []
+        reparto = documento.get("cast") or []
+        directores = documento.get("directors") or []
+        fecha_estreno = formatear_fecha(documento.get("released"))
+        trama = documento.get("fullplot") or documento.get("plot") or "Sin descripción"
+        premios = documento.get("awards") or {}
+        imdb = documento.get("imdb") or {}
+        tomatoes
