@@ -139,4 +139,67 @@ def principal(pagina: ft.Page):
         trama = documento.get("fullplot") or documento.get("plot") or "Sin descripción"
         premios = documento.get("awards") or {}
         imdb = documento.get("imdb") or {}
-        tomatoes
+        tomatoes = documento.get("tomatoes") or {}
+        posters = documento.get("posters")
+
+        calificacion_imd = imdb.get("rating", "-")
+        votos_imdb = imdb.get("votes", "-")
+        calificacion_tomatoes = "-"
+        if isinstance(tomatoes, dict):
+            viewer = tomatoes.get("viewer", {})
+            calificacion_tomatoes = viewer.get("rating", "-") if isinstance(viewer, dict) else "-"
+
+        texto_premios = premios.get("text", "-") if isinstance(premios, dict) else "-"
+
+        imagen = (
+            ft.Image(src=poster, width=260, height=300)
+            if isinstance(poster, str) and poster.startswith("http")
+            else ft.Container(
+                content=ft.Icon(ft.Icons.IMAGE_NOT_SUPPORTED, size=60, opacity=0.5),
+                width=260,
+                geight=380,
+                alignment=ft.Alignment(0, 0),
+                bgcolor=ft.Colors.GREY_100,
+                border_radius=10,
+            )
+        )
+
+        return ft.Container(
+            content=ft.Card(
+                content=ft.Container(
+                    padding=12,
+                    content=ft.ROW(
+                        spasing=16,
+                        vertical_alignment=ft.CrossAxisAlignment.START,
+                        controls=[
+                            ft.Container(content=imagen, border_radius=10),
+                            ft.Container(
+                                expand=True,
+                                content=ft.Column(
+                                    spacing=8,
+                                    tight=True,
+                                    controls=[
+                                        ft.Text(f"{titulo} ({anio})", size=22, weight=ft.FontWeight.W_600),
+                                        ft.Row(
+                                            warp=True,
+                                            controls=[
+                                                etiquta(f"ID: {id_pelicula}"),
+                                                etiquta(f"Clasificacion: {clasificacion}"),
+                                                etiquta(f"Duracion: {duracion} min"),
+                                                etiquta(f"Estreno: {fecha_estreno}"),
+                                            ],
+                                        ),
+                                        ft.Row(
+                                            warp=True,
+                                            controls=[etiqueta(g) for g in generos]
+                                            if generos
+                                            else [etiquetas("Sin genero", ft.Colors)]
+                                        )
+                                    ]
+                                )
+                            )
+                        ]
+                    )
+                )
+            )
+        )
